@@ -1,6 +1,7 @@
 package com.yoloci.fileupload;
 
 import android.os.Bundle;
+import android.os.Environment;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
@@ -109,11 +110,16 @@ public class FileUploadModule extends ReactContextBaseJavaModule {
                 ReadableMap file = files.getMap(i);
                 String filename = file.getString("filename");
                 String filepath = file.getString("filepath");
+                if (filepath.isEmpty())
+                {
+                    //if path is empty use ExternalStorageDirectory
+                    filepath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + filename;
+                }
                 filepath = filepath.replace("file://", "");
                 fileInputStream = new FileInputStream(filepath);
 
                 outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-                outputStream.writeBytes("Content-Disposition: form-data; name=\"image\";filename=\"" + filename + "\"" + lineEnd);
+                outputStream.writeBytes("Content-Disposition: form-data; name=\"file\";filename=\"" + filename + "\"" + lineEnd);
                 outputStream.writeBytes(lineEnd);
 
                 bytesAvailable = fileInputStream.available();
